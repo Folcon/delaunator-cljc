@@ -1,0 +1,14 @@
+^{
+  ;; use an alternative landing page for the tests so that we don't
+  ;; launch the application
+  :open-url false #_"http://[[server-hostname]]:[[server-port]]/test.html"
+  
+  ;; uncomment to launch tests in a headless environment
+  ;; you will have to figure out the path to chrome on your system
+  #_#_:launch-js ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" #_"--headless" "--devtools" "--incognito" "--disable-gpu" "--repl" :open-url]}
+
+{:main delaunator-clj.test-runner
+ :output-to            "resources/public/js/compiled/app-testing.js"
+ :output-dir           "resources/public/js/compiled/out"
+ :asset-path           "/js/compiled/out"
+ :source-map-timestamp true}

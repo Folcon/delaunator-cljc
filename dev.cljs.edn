@@ -1,0 +1,9 @@
+^{:open-url   false
+  :watch-dirs ["test" "src/cljs" "src/cljc"]
+  :css-dirs   ["resources/public/css"]
+  :auto-testing true}
+{:main delaunator-clj.core
+ :output-to            "resources/public/js/compiled/app.js"
+ :output-dir           "resources/public/js/compiled/out"
+ :asset-path           "/js/compiled/out"
+ :source-map-timestamp true}
