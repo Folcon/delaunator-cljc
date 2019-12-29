@@ -1,6 +1,12 @@
 (ns delaunator-cljc.delaunay)
 
 
+(def unchecked false)
+(def +! (if unchecked unchecked-add +))
+(def -! (if unchecked unchecked-subtract -))
+(def *! (if unchecked unchecked-multiply *))
+
+
 
 (def EPSILON (Math/pow 2 -52))
 
@@ -16,32 +22,32 @@
 (defn pseudo-angle
   "monotonically increases with real angle, but doesn't need expensive trigonometry"
   [dx dy]
-  (let [p (/ dx (+ (Math/abs dx)
-                   (Math/abs dy)))]
+  (let [p (/ dx (+! (Math/abs dx)
+                    (Math/abs dy)))]
     ;; values range between [0..1]
     (/ (if (> dy 0)
-         (- 3 p)
-         (+ 1 p))
+         (-! 3 p)
+         (+! 1 p))
        4)))
 
 (defn hash-key
   "An angle based hash function"
   [[cx cy] hash-size x y]
-  (mod (Math/floor (* (pseudo-angle (- x cx) (- y cy)) hash-size)) hash-size))
+  (mod (Math/floor (*! (pseudo-angle (-! x cx) (-! y cy)) hash-size)) hash-size))
 
 
 (defn dist [ax ay bx by]
-  (let [dx (- ax bx)
-        dy (- ay by)]
-    (+ (* dx dx) (* dy dy))))
+  (let [dx (-! ax bx)
+        dy (-! ay by)]
+    (+! (*! dx dx) (*! dy dy))))
 
 (defn orient-if-sure
   "return 2d orientation sign if we're confident in it through J. Shewchuk's error bound check"
   [px py rx ry qx qy]
-  (let [l (* (- ry py) (- qx px))
-        r (* (- rx px) (- qy py))]
-    (if (>= (Math/abs (- l r)) (* 3.3306690738754716e-16 (Math/abs (+ l r))))
-      (- l r)
+  (let [l (*! (-! ry py) (-! qx px))
+        r (*! (-! rx px) (-! qy py))]
+    (if (>= (Math/abs (-! l r)) (*! 3.3306690738754716e-16 (Math/abs (+! l r))))
+      (-! l r)
       0)))
 
 (defn orient
@@ -57,47 +63,47 @@
       (< without-zeros 0))))
 
 (defn in-circle [[ax ay] [bx by] [cx cy] [px py]]
-  (let [dx (- ax px)
-        dy (- ay py)
-        ex (- bx px)
-        ey (- by py)
-        fx (- cx px)
-        fy (- cy py)
+  (let [dx (-! ax px)
+        dy (-! ay py)
+        ex (-! bx px)
+        ey (-! by py)
+        fx (-! cx px)
+        fy (-! cy py)
 
-        ap (+ (* dx dx) (* dy dy))
-        bp (+ (* ex ex) (* ey ey))
-        cp (+ (* fx fx) (* fy fy))]
-    (< (+ (- (* (- (* ey cp) (* bp fy)) dx)
-             (* (- (* ex cp) (* bp fx)) dy))
-          (* (- (* ex fy) (* ey fx)) ap))
+        ap (+! (*! dx dx) (*! dy dy))
+        bp (+! (*! ex ex) (*! ey ey))
+        cp (+! (*! fx fx) (*! fy fy))]
+    (< (+! (-! (*! (-! (*! ey cp) (*! bp fy)) dx)
+               (*! (-! (*! ex cp) (*! bp fx)) dy))
+           (*! (-! (*! ex fy) (*! ey fx)) ap))
        0)))
 
 (defn circumradius [ax ay bx by cx cy]
-  (let [dx (- bx ax)
-        dy (- by ay)
-        ex (- cx ax)
-        ey (- cy ay)
+  (let [dx (-! bx ax)
+        dy (-! by ay)
+        ex (-! cx ax)
+        ey (-! cy ay)
 
-        bl (+ (* dx dx) (* dy dy))
-        cl (+ (* ex ex) (* ey ey))
-        d (/ 0.5 (- (* dx ey) (* dy ex)))
+        bl (+! (*! dx dx) (*! dy dy))
+        cl (+! (*! ex ex) (*! ey ey))
+        d (/ 0.5 (-! (*! dx ey) (*! dy ex)))
 
-        x (* (- (* ey bl) (* dy cl)) d)
-        y (* (- (* dx cl) (* ex bl)) d)]
-    (+ (* x x) (* y y))))
+        x (*! (-! (*! ey bl) (*! dy cl)) d)
+        y (*! (-! (*! dx cl) (*! ex bl)) d)]
+    (+! (*! x x) (*! y y))))
 
 (defn circumcenter [ax ay bx by cx cy]
-  (let [dx (- bx ax)
-        dy (- by ay)
-        ex (- cx ax)
-        ey (- cy ay)
+  (let [dx (-! bx ax)
+        dy (-! by ay)
+        ex (-! cx ax)
+        ey (-! cy ay)
 
-        bl (+ (* dx dx) (* dy dy))
-        cl (+ (* ex ex) (* ey ey))
-        d (/ 0.5 (- (* dx ey) (* dy ex)))
+        bl (+! (*! dx dx) (*! dy dy))
+        cl (+! (*! ex ex) (*! ey ey))
+        d (/ 0.5 (-! (*! dx ey) (*! dy ex)))
 
-        x (+ ax (* (- (* ey bl) (* dy cl)) d))
-        y (+ ay (* (- (* dx cl) (* ex bl)) d))]
+        x (+! ax (*! (-! (*! ey bl) (*! dy cl)) d))
+        y (+! ay (*! (-! (*! dx cl) (*! ex bl)) d))]
     [x y]))
 
 
@@ -106,14 +112,14 @@
 (comment
   (let [coords (take 5 points)
         [[max-x min-x] [max-y min-y]] (mapv (partial apply (juxt max min)) (apply map vector coords))
-        cx (/ (+ min-x max-x) 2)
-        cy (/ (+ min-y max-y) 2)]
+        cx (/ (+! min-x max-x) 2)
+        cy (/ (+! min-y max-y) 2)]
     (reduce (fn [[d seed] [x y]] (let [new-d (dist cx cy x y)] (if (< new-d d) [new-d [x y]] [d seed]))) [##Inf [##Inf ##Inf]] coords)))
 
 (defn find-visible-edge [hull-hash hull-next center hash-size x y]
   (let [key (hash-key center hash-size x y)]
     (loop [idx 0]
-      (let [lookup (mod (+ key idx) hash-size)
+      (let [lookup (mod (+! key idx) hash-size)
             start (nth hull-hash lookup -1)]
         (if (and (not= start -1) (not= start (hull-next start)))
           start
@@ -136,12 +142,12 @@
   [{:keys [triangles-len] :as state} seed-idx point-idx location-idx a b c]
   (-> state
       (update :triangles assoc triangles-len seed-idx
-              (+ triangles-len 1) point-idx
-              (+ triangles-len 2) location-idx)
+              (+! triangles-len 1) point-idx
+              (+! triangles-len 2) location-idx)
       (add-link triangles-len a)
-      (add-link (+ triangles-len 1) b)
-      (add-link (+ triangles-len 2) c)
-      (update :triangles-len + 3)))
+      (add-link (+! triangles-len 1) b)
+      (add-link (+! triangles-len 2) c)
+      (update :triangles-len +! 3)))
 
 
 (defn fix-half-edge-reference [{:keys [points hull-start hull-prev hull-tri] :as state} bl a]
@@ -176,17 +182,17 @@
   (loop [{:keys [points triangles half-edges] :as state} state a a stack []]
     (let [b (nth half-edges a)
 
-          a0 (- a (mod a 3))
-          ar (+ a0 (mod (+ a 2) 3))]
+          a0 (-! a (mod a 3))
+          ar (+! a0 (mod (+! a 2) 3))]
       (if (= b -1)
 
         (if (empty? stack)
           (assoc state :ar ar)
           (recur state (peek stack) (pop stack)))
 
-        (let [b0 (- b (mod b 3))
-              al (+ a0 (mod (+ a 1) 3))
-              bl (+ b0 (mod (+ b 2) 3))
+        (let [b0 (-! b (mod b 3))
+              al (+! a0 (mod (+! a 1) 3))
+              bl (+! b0 (mod (+! b 2) 3))
 
               p0-idx (nth triangles ar)
               pr-idx (nth triangles a)
@@ -206,7 +212,7 @@
                   state (if (= hbl -1)
                           (fix-half-edge-reference state bl a)
                           state)
-                  br (+ b0 (mod (+ b 1) 3))]
+                  br (+! b0 (mod (+! b 1) 3))]
               (recur (-> state
                          (update :triangles assoc
                                  a p1-idx
@@ -251,8 +257,8 @@
 (defn calculate-center+bbox [{:keys [points] :as state}]
   (let [;: populate point indices; calculate input data bbox
         [[max-x min-x] [max-y min-y]] (mapv (partial apply (juxt max min)) (apply map vector points))
-        cx (/ (+ min-x max-x) 2)
-        cy (/ (+ min-y max-y) 2)]
+        cx (/ (+! min-x max-x) 2)
+        cy (/ (+! min-y max-y) 2)]
     (assoc state
       :max-x max-x :min-x min-x
       :max-y max-y :min-y min-y
@@ -304,7 +310,7 @@
     (let [{:keys [hull-next hull-tri]} state
           triangles-len (:triangles-len state)
           state (add-triangle state e xy-idx (hull-next e) -1 -1 (hull-tri e))
-          {:keys [ar] :as state} (legalise state (+ triangles-len 2))]
+          {:keys [ar] :as state} (legalise state (+! triangles-len 2))]
       (-> state
           (update :hull-tri assoc
                             xy-idx ar
@@ -325,7 +331,7 @@
         (recur q                                  ;; new nxy
                (let [{:keys [triangles-len hull-tri]} state
                      state (add-triangle state nxt xy-idx q (nth hull-tri xy-idx) -1 (nth hull-tri nxt))
-                     {:keys [ar] :as state} (legalise state (+ triangles-len 2))]
+                     {:keys [ar] :as state} (legalise state (+! triangles-len 2))]
                  (-> state
                      (update :hull-tri assoc xy-idx ar)
                      (update :hull-next assoc nxt nxt)  ;; mark as removed
@@ -346,7 +352,7 @@
           (recur q                                ;; new nxy
                  (let [{:keys [triangles-len hull-tri]} state
                        state (add-triangle state q xy-idx e -1 (nth hull-tri e) (nth hull-tri q))
-                       state (legalise state (+ triangles-len 2))]
+                       state (legalise state (+! triangles-len 2))]
                    (-> state
                        (update :hull-tri assoc q triangles-len)
                        (update :hull-next assoc e e) ;; mark as removed
@@ -356,7 +362,7 @@
 (defn compute-hull [{:keys [points seed point location hull-hash hull-prev hull-next hull-tri hash-size cx cy xp yp] :as state} [_dist xy-idx [x y]]]
   (cond
     ;; skip near-duplicate points
-    (and (or (not (nil? xp)) (not (nil? yp))) (<= (Math/abs (- x xp)) EPSILON) (<= (Math/abs (- y yp)) EPSILON))
+    (and (or (not (nil? xp)) (not (nil? yp))) (<= (Math/abs (-! x xp)) EPSILON) (<= (Math/abs (-! y yp)) EPSILON))
     state
 
     ;; skip seed triangle points
@@ -493,8 +499,8 @@
   ;;   and return the list as a hull
   (let [[fx fy] (first points)
         coords+dist (map-indexed (fn [idx [x y]]
-                                   (let [dx (- x fx)]
-                                     (if (zero? dx) [(- y fy) idx [x y]] [dx idx [x y]]))) points)
+                                   (let [dx (-! x fx)]
+                                     (if (zero? dx) [(-! y fy) idx [x y]] [dx idx [x y]]))) points)
         sorted-coords (sort-by first coords+dist)
 
         [_d hull] (reduce
@@ -519,10 +525,10 @@
   ([points _opts] ;; opts like spitting out triangles?
    (let [n (count points)
          ;; arrays that will store the triangulation graph
-         max-triangles (max (- (* 2 n) 5) 0)
-         coords (into (vector-array (* n 2)) cat points)
-         triangles (vector-array (* max-triangles 3))
-         half-edges (vector-array (* max-triangles 3))]
+         max-triangles (max (-! (*! 2 n) 5) 0)
+         coords (into (vector-array (*! n 2)) cat points)
+         triangles (vector-array (*! max-triangles 3))
+         half-edges (vector-array (*! max-triangles 3))]
      (-> {:n          n :points points :coords coords
           :triangles  triangles
           :half-edges half-edges}
