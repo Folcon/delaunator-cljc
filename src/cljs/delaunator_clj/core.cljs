@@ -1,6 +1,6 @@
-(ns ^:figwheel-hooks delaunator-clj.core
+(ns ^:figwheel-hooks delaunator-cljc.core
   (:require [goog.dom :as gdom]
-            [delaunator-clj.delaunay]))
+            [delaunator-cljc.delaunay]))
 
 
 ;; define your app data so that it doesn't get over-written on reload

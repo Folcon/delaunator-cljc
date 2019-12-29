@@ -1,4 +1,4 @@
-# delaunator-clj
+# delaunator-cljc
 
 Fast 2D Delaunay triangulation in Clojure. A port of [Delaunator](https://github.com/mapbox/delaunator).
 

@@ -1,4 +1,4 @@
-(ns delaunator-clj.delaunay)
+(ns delaunator-cljc.delaunay)
 
 
 

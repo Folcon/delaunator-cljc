@@ -1,11 +1,11 @@
-(ns delaunator-clj.core-test
+(ns delaunator-cljc.core-test
     (:require [cljs.test :refer-macros [deftest is testing]]
               [clojure.test.check.clojure-test :refer [defspec]]
               [clojure.test.check.properties :as prop]
               [clojure.test.check.generators :as gen]
               [clojure.test.check :as tc]
-              [delaunator-clj.delaunay :refer [delaunator]])
-    (:require-macros [delaunator-clj.macros :refer [inline-resource]]))
+              [delaunator-cljc.delaunay :refer [delaunator]])
+    (:require-macros [delaunator-cljc.macros :refer [inline-resource]]))
 
 (let [points [[0 0] [0 1] [0 2] [1 2] [2 2] [2 1] [2 0] [1 0]]]
   (println :js)

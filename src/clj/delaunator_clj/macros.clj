@@ -1,4 +1,4 @@
-(ns delaunator-clj.macros
+(ns delaunator-cljc.macros
   (:require [clojure.java.io :as io]
             [clojure.edn :as edn]))
 

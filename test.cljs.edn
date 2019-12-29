@@ -7,7 +7,7 @@
   ;; you will have to figure out the path to chrome on your system
   #_#_:launch-js ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" #_"--headless" "--devtools" "--incognito" "--disable-gpu" "--repl" :open-url]}
 
-{:main delaunator-clj.test-runner
+{:main delaunator-cljc.test-runner
  :output-to            "resources/public/js/compiled/app-testing.js"
  :output-dir           "resources/public/js/compiled/out"
  :asset-path           "/js/compiled/out"

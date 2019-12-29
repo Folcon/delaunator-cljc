@@ -1,8 +1,8 @@
-(defproject delaunator-clj "0.1.0-SNAPSHOT"
+(defproject delaunator-cljc "0.1.0-SNAPSHOT"
   :description "Fast 2D Delaunay triangulation in Clojure. A port of Delaunator."
-  :url "https://github.com/Folcon/delaunator-clj"
+  :url "https://github.com/Folcon/delaunator-cljc"
   :license {:name "MIT"
-            :url "https://github.com/Folcon/delaunator-clj/blob/master/LICENSE"}
+            :url "https://github.com/Folcon/delaunator-cljc/blob/master/LICENSE"}
 
   :min-lein-version "2.7.1"
 
@@ -17,7 +17,7 @@
   :aliases {"fig"       ["trampoline" "run" "-m" "figwheel.main"]
             "fig:dev"   ["trampoline" "run" "-m" "figwheel.main" "-b" "dev" "-r"]
             "fig:min"   ["run" "-m" "figwheel.main" "-O" "advanced" "-bo" "dev"]
-            "fig:test"  ["run" "-m" "figwheel.main" "-co" "test.cljs.edn" "-m" "delaunator-clj.test-runner"]}
+            "fig:test"  ["run" "-m" "figwheel.main" "-co" "test.cljs.edn" "-m" "delaunator-cljc.test-runner"]}
 
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.3"]
                                   [com.bhauman/rebel-readline-cljs "0.1.4"]]}})
