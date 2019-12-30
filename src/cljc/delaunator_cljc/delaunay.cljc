@@ -489,8 +489,6 @@
           ;; walk forward through the hull, adding more triangles and flipping recursively)
           [state nxt] (walk-forward state e x y xy-idx)
 
-          _ (pr-str state) ;; annoyingly need this as I've got to chase down a lazy evaluation bug
-
           ;; walk backward from the other side, adding more triangles and flipping
           [{:keys [cx cy] :as state} e] (walk-backward state start e x y xy-idx)
 
@@ -541,6 +539,9 @@
 
         ;; sort the points by distance from the seed triangle circumcenter
         points+dist (map-indexed (fn [idx [x y]] [(dist x y cx cy) idx [x y]]) points)
+        sorted-idx  (quicksort (mapv second points+dist) (mapv first points+dist) 0 (dec n))
+        sorted-points (mapv (fn [idx] (nth points+dist idx)) sorted-idx)
+        #_#_
         sorted-points (sort-by first points+dist)]
     (->
       state
