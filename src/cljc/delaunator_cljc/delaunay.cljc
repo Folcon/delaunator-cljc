@@ -7,6 +7,89 @@
 (def *! (if unchecked unchecked-multiply *))
 
 
+(defn swap [arr a b]
+  (let [av (nth arr a)
+        bv (nth arr b)]
+    (-> arr
+        (assoc b av)
+        (assoc a bv))))
+
+(defn quicksort
+  [idxs dists left right]
+  (if (<= (- right left) 20)
+    (loop [i (inc left)
+           idxs idxs]
+      (if (<= i right)
+        (let [tmpidx (nth idxs i)
+              tmpdist (nth dists tmpidx)
+              j (dec i)
+              [idxs j] (loop [idxs idxs j j]
+                         (if
+                           (and (>= j left) (> (nth dists (nth idxs j)) tmpdist))
+
+                           (recur (assoc idxs (inc j) (nth idxs j)) (dec j))
+                           [idxs j]))]
+          (recur (inc i)
+                 (assoc idxs (inc j) tmpidx)))
+        idxs))
+    (let [median (bit-shift-right (+ left right) 1)
+          i$1 (inc left)
+          j$1 right
+          idxs (swap idxs median i$1)
+          idxs (if (> (nth dists (nth idxs left)) (nth dists (nth idxs right)))
+                 (swap idxs left right)
+                 idxs)
+
+          idxs (if (> (nth dists (nth idxs i$1)) (nth dists (nth idxs right)))
+                 (swap idxs i$1 right)
+                 idxs)
+
+          idxs (if (> (nth dists (nth idxs left)) (nth dists (nth idxs i$1)))
+                 (swap idxs left i$1)
+                 idxs)
+
+          tmp1  (nth idxs i$1)
+          dist1 (nth dists tmp1)
+
+          [idxs i$1 j$1] (loop [idxs idxs i$1 i$1 j$1 j$1]
+                           (let [i$1 (loop [i$1 i$1]
+                                       (let [i$1 (inc i$1)]
+                                         (if (< (nth dists (nth idxs i$1)) dist1)
+                                           (recur i$1)
+                                           i$1)))
+                                 j$1 (loop [j$1 j$1]
+                                       (let [j$1 (dec j$1)]
+                                         (if (> (nth dists (nth idxs j$1)) dist1)
+                                           (recur j$1)
+                                           j$1)))]
+                             (if (< j$1 i$1)
+                               [idxs i$1 j$1]
+                               (recur (swap idxs i$1 j$1)
+                                      i$1
+                                      j$1))))
+          idxs (-> idxs
+                   (assoc (inc left) (nth idxs j$1))
+                   (assoc j$1 tmp1))]
+      (if (>= (inc (- right i$1)) (- j$1 left))
+        (-> idxs
+            (quicksort dists i$1 right)
+            (quicksort dists left (dec j$1)))
+        (-> idxs
+            (quicksort dists left (dec j$1))
+            (quicksort dists i$1 right))))))
+
+
+
+(comment
+  (def in  [0.5 2.5 0.5 0.5 2.5 6.5 12.5 2.5 6.5 30.5 20.5 12.5 42.5 20.5 30.5 42.5 56.5 72.5 90.5 56.5 72.5 0.5])
+  (def out [0 3 21 2 4 7 1 5 8 6 11 13 10 9 14 12 15 16 19 17 20 18])
+
+  (let [dists in
+        n     (count dists)
+        idxs  (vec (range n))]
+    (quicksort idxs dists 0 (dec n))))
+
+
 
 (def EPSILON (Math/pow 2 -52))
 
