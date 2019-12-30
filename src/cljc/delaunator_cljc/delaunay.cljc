@@ -136,14 +136,16 @@
 (defn orient
   "a more robust orientation test that's stable in a given triangle (to fix robustness issues)"
   [rx ry qx qy px py]
-  (let [fst (orient-if-sure px py rx ry qx qy)
-        snd (orient-if-sure rx ry qx qy px py)
-        lst (orient-if-sure qx qy px py rx ry)
-
-        without-zeros (first (remove zero? [fst snd lst]))]
-    (if (nil? without-zeros)
-      false
-      (< without-zeros 0))))
+  (let [fst (orient-if-sure px py rx ry qx qy)]
+    (if-not (zero? fst)
+      (< fst 0)
+      (let [snd (orient-if-sure rx ry qx qy px py)]
+        (if-not (zero? snd)
+          (< snd 0)
+          (let [lst (orient-if-sure qx qy px py rx ry)]
+            (if-not (zero? lst)
+              (< lst 0)
+              false)))))))
 
 (defn in-circle [[ax ay] [bx by] [cx cy] [px py]]
   (let [dx (-! ax px)
