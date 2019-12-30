@@ -37,6 +37,10 @@ To create a production build run:
 	lein clean
 	lein fig:min
 
+## Performance
+
+The `example.perf` namespace is setup to do some basic profiling in clojure.
+For clojurescript, the test cases give some time based benchmarks.
 
 ## License
 
