@@ -21,6 +21,7 @@
 
   :profiles {:dev {:dependencies [[com.bhauman/figwheel-main "0.2.3"]
                                   [com.bhauman/rebel-readline-cljs "0.1.4"]
+                                  [quil "3.1.0"]
                                   [com.clojure-goes-fast/clj-async-profiler "0.4.0"]]}}
 
   :jvm-opts ["-Djdk.attach.allowAttachSelf"])
