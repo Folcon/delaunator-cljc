@@ -6,6 +6,9 @@
 (def -! (if unchecked unchecked-subtract -))
 (def *! (if unchecked unchecked-multiply *))
 
+;; Implementing abs is comparable perfwise to using type hinting atm...
+(defn abs [n]
+  (if (neg? n) (-! 0 n) n))
 
 (defn swap [arr a b]
   (let [av (nth arr a)
@@ -105,8 +108,8 @@
 (defn pseudo-angle
   "monotonically increases with real angle, but doesn't need expensive trigonometry"
   [dx dy]
-  (let [p (/ dx (+! (Math/abs dx)
-                    (Math/abs dy)))]
+  (let [p (/ dx (+! (abs dx)
+                    (abs dy)))]
     ;; values range between [0..1]
     (/ (if (> dy 0)
          (-! 3 p)
@@ -129,7 +132,7 @@
   [px py rx ry qx qy]
   (let [l (*! (-! ry py) (-! qx px))
         r (*! (-! rx px) (-! qy py))]
-    (if (>= (Math/abs (-! l r)) (*! 3.3306690738754716e-16 (Math/abs (+! l r))))
+    (if (>= (abs (-! l r)) (*! 3.3306690738754716e-16 (abs (+! l r))))
       (-! l r)
       0)))
 
@@ -447,7 +450,7 @@
 (defn compute-hull [{:keys [points seed point location hull-hash hull-prev hull-next hull-tri hash-size cx cy xp yp] :as state} [_dist xy-idx [x y]]]
   (cond
     ;; skip near-duplicate points
-    (and (or (not (nil? xp)) (not (nil? yp))) (<= (Math/abs (-! x xp)) EPSILON) (<= (Math/abs (-! y yp)) EPSILON))
+    (and (or (not (nil? xp)) (not (nil? yp))) (<= (abs (-! x xp)) EPSILON) (<= (abs (-! y yp)) EPSILON))
     state
 
     ;; skip seed triangle points
