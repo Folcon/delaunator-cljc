@@ -209,7 +209,7 @@
     (loop [idx 0]
       (let [lookup (mod (+! key idx) hash-size)
             start (nth hull-hash lookup -1)]
-        (if (and (not= start -1) (not= start (hull-next start)))
+        (if (and (not= start -1) (not= start (get hull-next start)))
           start
           (recur (inc idx)))))))
 
