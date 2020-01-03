@@ -106,7 +106,7 @@
   (when-not (= @prior state)
     (println :dirty? (= @prior state) @prior state)
     (let [delaunator-state (time (delaunator points))
-          {:keys [triangles half-edges]} delaunator-state]
+          {:keys [triangles half-edges hull]} delaunator-state]
       (q/background 240)
 
       (q/with-translation [(/ (q/width) 4)
@@ -140,7 +140,14 @@
         (q/color-mode :rgb)
         (q/stroke 255 0 0)
         (q/ellipse cx cy 5 5)
-        (q/stroke 0 0 0)))
+        (q/stroke 0 0 0))
+
+      (q/fill 150 150 150 50)
+      ;; hull
+      (q/begin-shape)
+      (doseq [[x y] (map #(nth points %) hull)]
+        (q/vertex x y))
+      (q/end-shape :close))
 
     (q/stroke 0 0 0)
     (q/fill 255 255 255)
