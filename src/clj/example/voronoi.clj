@@ -107,7 +107,7 @@
     (println :dirty? (= @prior state) (dissoc @prior :points) (dissoc state :points))
     (let [delaunator-state (time (delaunator points))
           {:keys [triangles half-edges hull]} delaunator-state]
-      (q/background 240)
+      (q/background 170)
 
       ;; triangle edges
       ;#_
