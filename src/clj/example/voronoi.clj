@@ -109,8 +109,6 @@
           {:keys [triangles half-edges hull]} delaunator-state]
       (q/background 240)
 
-      (q/with-translation [(/ (q/width) 4)
-                           (/ (q/height) 4)])
       ;; triangle edges
       ;#_
       (doseq [edge (render-triangle-edges points triangles half-edges)
