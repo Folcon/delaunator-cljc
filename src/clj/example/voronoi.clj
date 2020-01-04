@@ -111,18 +111,17 @@
 
       ;; triangle edges
       ;#_
-      (doseq [edge (unique-triangle-edges points triangles half-edges)
-              :let [[start stop] edge]]
-        (draw-line start stop))
-
-      (q/stroke 255 0 0 50)
+      (q/with-stroke [0 0 0]
+       (doseq [edge (unique-triangle-edges points triangles half-edges)
+               :let [[start stop] edge]]
+         (draw-line start stop)))
 
       ;; voronoi edges
       ;#_
-      (doseq [edge (unique-voronoi-edges points triangles half-edges)
-              :let [[start stop] edge]]
-        (draw-line start stop))
-      (q/stroke 0 0 0 255)
+      (q/with-stroke [255 0 0 50]
+       (doseq [edge (unique-voronoi-edges points triangles half-edges)
+               :let [[start stop] edge]]
+         (draw-line start stop)))
 
       ;; voronoi cells
       ;#_
@@ -130,29 +129,27 @@
               :let [hue     (mod (* 2 (:idx cell)) 360)
                     [cx cy] (:point cell)]]
         (q/color-mode :hsb 360 1 1)
-        (q/fill hue 0.2 0.8)
-        (q/begin-shape)
-        (doseq [[x y] (:vertices cell)]
-          (q/vertex x y))
-        (q/end-shape :close)
-        (q/color-mode :rgb)
-        (q/stroke 255 0 0)
-        (q/ellipse cx cy 5 5)
-        (q/stroke 0 0 0))
+        (q/with-fill [hue 0.2 0.8]
+          (q/begin-shape)
+          (doseq [[x y] (:vertices cell)]
+            (q/vertex x y))
+          (q/end-shape :close)
+          (q/color-mode :rgb)
+          (q/with-stroke red
+            (q/ellipse cx cy 5 5))))
 
-      (q/fill 150 150 150 50)
       ;; hull
-      (q/begin-shape)
-      (doseq [[x y] (map #(nth points %) hull)]
-        (q/vertex x y))
-      (q/end-shape :close))
-
-    (q/stroke 0 0 0)
-    (q/fill 255 255 255)
+      ;#_
+      (q/with-fill [150 150 150 50]
+        (q/begin-shape)
+        (doseq [[x y] (map #(nth points %) hull)]
+          (q/vertex x y))
+        (q/end-shape :close))
 
 
     (when-not (or (nil? x) (nil? y))
-      (q/ellipse x y 3 3))
+      (q/with-fill [255 255 255]
+        (q/ellipse x y 3 3)))
     (reset! prior state)))
 
 (defn q-mouse-moved [{:keys [_x _y] :as state} event]
