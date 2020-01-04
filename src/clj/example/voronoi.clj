@@ -99,6 +99,54 @@
   {:points
    (inline-resource "voronoi.edn")})
 
+;;; Colours
+(def black 0)
+(def white 255)
+(def red   [255 0 0])
+(def green [0 255 0])
+(def blue  [0 0 255])
+
+
+(defn render-voronoi
+  "displays a representation of the voronoi"
+  ([delaunator-state] (render-voronoi delaunator-state {}))
+  ([{:keys [points triangles half-edges] :as delaunator-state}
+    {:keys [show-voronoi show-voronoi-edges show-voronoi-points
+            show-triangles show-triangle-edges show-triangle-points]
+     :or   {show-voronoi true show-voronoi-edges true show-voronoi-points true
+            show-triangles true show-triangle-edges true show-triangle-points true} :as _opts}]
+
+   ;; black triangle edges
+   (if-let [stroke (if (and show-triangles show-triangle-edges) black nil)]
+     (q/with-stroke stroke
+       (doseq [edge (unique-triangle-edges points triangles half-edges)
+               :let [[start stop] edge]]
+         (draw-line start stop))))
+
+   ;; white voronoi edges
+   (if-let [stroke (if (and show-voronoi show-voronoi-edges) white nil)]
+    (q/with-stroke stroke
+      (doseq [edge (unique-voronoi-edges points triangles half-edges)
+              :let [[start stop] edge]]
+        (draw-line start stop))))
+
+   ;; blue voronoi vertices / triangle centers
+   (if-let [fill (if (and show-voronoi show-voronoi-points) blue nil)]
+    (let [cells (voronoi-cells points delaunator-state)
+          vertices (into [] (comp (mapcat :vertices) (distinct)) cells)]
+      (q/with-fill fill
+        (doseq [vertex vertices
+                :let [[x y] vertex]]
+          (q/ellipse x y 3 3)))))
+
+   ;; red triangle points / voronoi centers
+   (if-let [fill (if (and show-triangles show-triangle-points) red nil)]
+    (q/with-fill fill
+      (doseq [point points
+              :let [[x y] point]]
+        (q/ellipse x y 5 5))))))
+
+
 (def prior (atom nil))
 
 
@@ -146,6 +194,9 @@
           (q/vertex x y))
         (q/end-shape :close))
 
+      ;; looking at generalising the rendering of the voronoi
+      #_
+      (render-voronoi delaunator-state))
 
     (when-not (or (nil? x) (nil? y))
       (q/with-fill [255 255 255]
