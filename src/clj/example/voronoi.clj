@@ -17,7 +17,7 @@
 (defn next-half-edge [edge-idx]
   (if (= (mod edge-idx 3) 2) (- edge-idx 2) (inc edge-idx)))
 
-(defn render-triangle-edges [points triangles half-edges]
+(defn unique-triangle-edges [points triangles half-edges]
   (remove nil?
     (map
       (comp (fn [[edge-idx tri he]]
@@ -39,7 +39,7 @@
 
 (def circumcenter-xf (map (comp (fn [[x y]] [(double x) (double y)]) #(apply circumcenter %))))
 
-(defn render-voronoi-edges [points triangles half-edges]
+(defn unique-voronoi-edges [points triangles half-edges]
   (let [triangle-circumcenters (into [] (comp (triangle-xf points) circumcenter-xf) triangles)]
     (remove nil?
       (map
@@ -111,7 +111,7 @@
 
       ;; triangle edges
       ;#_
-      (doseq [edge (render-triangle-edges points triangles half-edges)
+      (doseq [edge (unique-triangle-edges points triangles half-edges)
               :let [[start stop] edge]]
         (draw-line start stop))
 
@@ -119,7 +119,7 @@
 
       ;; voronoi edges
       ;#_
-      (doseq [edge (render-voronoi-edges points triangles half-edges)
+      (doseq [edge (unique-voronoi-edges points triangles half-edges)
               :let [[start stop] edge]]
         (draw-line start stop))
       (q/stroke 0 0 0 255)
