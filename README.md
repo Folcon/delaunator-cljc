@@ -2,6 +2,8 @@
 
 Fast 2D Delaunay triangulation in Clojure. A port of [Delaunator](https://github.com/mapbox/delaunator).
 
+[![Clojars Project](https://img.shields.io/clojars/v/delaunator-cljc.svg)](https://clojars.org/delaunator-cljc)
+
 ## Overview
 
 This is a straight port of the javascript library, it's not as performant,
